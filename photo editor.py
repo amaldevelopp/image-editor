@@ -1,29 +1,42 @@
-#read many images
-import numpy as np
-from PIL import Image
-import matplotlib.pyplot as plt
+from PIL import Image, ImageEnhance, ImageFilter
+import os
 
-# Load and display image 1
-image_1 = Image.open("C:\\Users\\amalh\\OneDrive - MSFT\\Desktop\\Downloaded Images\\adorable-fluffy-cat-laying-down_Caroly_Shutterstock-407128867.jpg")   
-plt.imshow(image_1)
-plt.title("Image 1")
-plt.show()
+def photo_editor(input_path, output_path):
+    # Create the output directory if it doesn't exist
+    os.makedirs(output_path, exist_ok=True)
 
-# Load and display image 2
-image_2 = Image.open("C:\\Users\\amalh\\OneDrive - MSFT\\Desktop\\Downloaded Images\\dilute-tortoiseshell-cat_Mary-Swift_Shutterstock-1101316464.jpg")   
-plt.imshow(image_2)
-plt.title("Image 2")
-plt.show()
+    # Check if the input directory exists
+    if os.path.exists(input_path):
+        # Iterate over each file in the input directory
+        for filename in os.listdir(input_path):
+            if filename.lower().endswith((".jpg", ".jpeg", ".png")):  # Process only image files
+                # Open the image
+                img = Image.open(os.path.join(input_path, filename))
 
-# Load and display image 3
-image_3 = Image.open("C:\\Users\\amalh\\OneDrive - MSFT\\Desktop\\Downloaded Images\\pexels-cottonbro-4709285.jpg")   
-plt.imshow(image_3)
-plt.title("Image 3")
-plt.show()
+                # Convert the image to black and white
+                edit = img.convert('L')
 
-# Load and display image 4
-image_4 = Image.open("C:\\Users\\amalh\\OneDrive - MSFT\\Desktop\\Downloaded Images\\pexels-photo-326875-1219471917.jpeg")   
-plt.imshow(image_4)
-plt.title("Image 4")
-plt.show()
-#make sure to install Pillow library
+                # Apply sharpening filter
+                edit = edit.filter(ImageFilter.SHARPEN)
+
+                # Rotate the image by -90 degrees
+                edit = edit.rotate(-90)
+
+                # Enhance contrast
+                contrast_factor = 1.5
+                enhancer = ImageEnhance.Contrast(edit)
+                edit = enhancer.enhance(contrast_factor)
+
+                # Create the cleaned name for the output file
+                clean_name = os.path.splitext(filename)[0]
+
+                # Save the edited image to the output directory
+                edit.save(os.path.join(output_path, f"{clean_name}_edited.jpg"))
+    else:
+        print(f"Error: Input directory '{input_path}' not found.")
+
+# Example usage:
+input_directory = r"C:\Users\amalh\OneDrive - MSFT\Desktop\Downloaded Images"  # Change this to your input directory
+output_directory = r"C:\Users\amalh\OneDrive - MSFT\Desktop\Edited Images"  # Change this to your output directory
+
+photo_editor(input_directory, output_directory)
